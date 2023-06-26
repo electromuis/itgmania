@@ -104,6 +104,7 @@ public:
 
 	//needs to be public for its binding to work
 	void RunLuaScripts( const RString &sMask, bool bUseThemeDir = false );
+	void RunPluginLuaScripts(const RString& sMask);
 
 	// For self-registering metrics
 	static void Subscribe( IThemeMetric *p );
@@ -132,7 +133,7 @@ protected:
 	bool m_bPseudoLocalize;
 };
 
-extern ThemeManager*	THEME;	// global and accessible from anywhere in our program
+GLOBALS_IMPORT_PREFIX extern ThemeManager*	THEME;	// global and accessible from anywhere in our program
 
 #endif
 

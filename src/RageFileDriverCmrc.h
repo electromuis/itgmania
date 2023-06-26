@@ -1,28 +1,54 @@
-#ifndef ARCH_SETUP_UNIX_H
-#define ARCH_SETUP_UNIX_H
+#ifndef RAGE_FILE_DRIVER_CMRC_H
+#define RAGE_FILE_DRIVER_CMRC_H
 
-#if !defined(_STDC_C99) && !defined(__C99FEATURES__)
-#define __C99FEATURES__
-#endif
+#include "RageFileDriver.h"
+#include "RageThreads.h"
+#include "RageFileBasic.h"
+#include "cmrc.hpp"
 
-#ifdef HAVE_ALLOCA_H
-#include <alloca.h>
-#endif
+class RageFileObjCmrc : public RageFileObj
+{
+public:
+	RageFileObjCmrc(cmrc::file file);
 
-#ifdef HAVE_SYS_PARAM_H
-#include <sys/param.h>
-#endif
-#ifdef BSD
-#undef ALIGN
-#undef MACHINE
-#endif
+	int ReadInternal(void* pBuffer, size_t iBytes);
+	int WriteInternal(const void* pBuffer, size_t iBytes) { return -1; }
+	int SeekInternal(int offset);
 
-#define GLOBALS_IMPORT_PREFIX
+	int GetFileSize() const;
+
+private:
+	int filePosition = 0;
+	cmrc::file file;
+};
+
+/** @brief A read-only file driver for CMRC embedded filesystems. */
+class RageFileDriverCmrc: public RageFileDriver
+{
+public:
+	RageFileDriverCmrc(cmrc::embedded_filesystem fs);
+
+	RageFileBasic* Open(const RString& sPath, int mode, int& err);
+	void FlushDirCache(const RString& /* sPath */) { }
+
+private:
+	cmrc::embedded_filesystem fs;
+};
+
+/** @brief A read-only file driver for CMRC embedded filesystems coming from loaded plugins. */
+class RageFileDriverCmrcPlugins : public RageFileDriver
+{
+public:
+	RageFileDriverCmrcPlugins();
+
+	RageFileBasic* Open(const RString& sPath, int mode, int& err);
+	void FlushDirCache(const RString& /* sPath */) { }
+};
 
 #endif
 
 /*
- * (c) 2004 Glenn Maynard
+ * Copyright (c) 2003-2005 Glenn Maynard
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a

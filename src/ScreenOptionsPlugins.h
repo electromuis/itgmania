@@ -1,30 +1,30 @@
-#ifndef ARCH_SETUP_UNIX_H
-#define ARCH_SETUP_UNIX_H
+#ifndef ScreenOptionsPlugins_H
+#define ScreenOptionsPlugins_H
 
-#if !defined(_STDC_C99) && !defined(__C99FEATURES__)
-#define __C99FEATURES__
-#endif
+#include "ScreenOptions.h"
+#include "ScreenMiniMenu.h"
 
-#ifdef HAVE_ALLOCA_H
-#include <alloca.h>
-#endif
+class ScreenOptionsPlugins : public ScreenOptions
+{
+public:
+	void Init();
+	virtual void BeginScreen();
+	
 
-#ifdef HAVE_SYS_PARAM_H
-#include <sys/param.h>
-#endif
-#ifdef BSD
-#undef ALIGN
-#undef MACHINE
-#endif
+protected:
+	virtual void ImportOptions( int iRow, const std::vector<PlayerNumber> &vpns );
+	virtual void ExportOptions( int iRow, const std::vector<PlayerNumber> &vpns );
 
-#define GLOBALS_IMPORT_PREFIX
+	virtual void AfterChangeValueOrRow(PlayerNumber pn);
+	virtual void ProcessMenuStart( const InputEventPlus &input );
+};
 
 #endif
 
 /*
- * (c) 2004 Glenn Maynard
+ * (c) 2003-2004 Chris Danford
  * All rights reserved.
- *
+ * 
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the
  * "Software"), to deal in the Software without restriction, including
@@ -34,7 +34,7 @@
  * copyright notice(s) and this permission notice appear in all copies of
  * the Software and that both the above copyright notice(s) and this
  * permission notice appear in supporting documentation.
- *
+ * 
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
  * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT OF

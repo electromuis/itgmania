@@ -20,6 +20,7 @@
 #include "LightsManager.h"
 #include "RageTimer.h"
 #include "RageInput.h"
+#include "PluginManager.h"
 
 #include <cmath>
 #include <vector>
@@ -294,6 +295,7 @@ void GameLoop::UpdateAllButDraw(bool bRunningFromVBLANK)
 	//bandaid for low max audio sample counter
 	SOUNDMAN->low_sample_count_workaround();
 	LIGHTSMAN->Update(fDeltaTime);
+	PLUGINMAN->Update(fDeltaTime);
 
 }
 

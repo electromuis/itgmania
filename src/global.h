@@ -102,7 +102,11 @@ void ShowWarningOrTrace( const char *file, int line, const char *message, bool b
 #define SM_UNIQUE_NAME2(x,line) SM_UNIQUE_NAME3(x, line)
 #define SM_UNIQUE_NAME(x) SM_UNIQUE_NAME2(x, __LINE__)
 
-#include "StdString.h"
+#if defined(GLOBALS_IMPORT)
+	#include "StdStringExport.h"
+#else
+	#include "StdString.h"
+#endif
 /** @brief Use RStrings throughout the program. */
 typedef StdString::CStdString RString;
 

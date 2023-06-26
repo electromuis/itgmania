@@ -59,6 +59,7 @@ void ArchHooks::MountInitialFilesystems( const RString &sDirOfExecutable )
 {
 	RString sDir = GetMountDir( sDirOfExecutable );
 	FILEMAN->Mount("dirro", sDir, "/");
+	FILEMAN->Mount("plugins", sDir, "/@plugins");
 
 	bool portable = DoesFileExist("/Portable.ini");
 	if (portable)

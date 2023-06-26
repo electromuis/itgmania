@@ -470,7 +470,31 @@ else()
   endif()
 endif()
 
+list(APPEND SM_INCLUDE_DIRS "${DYNALO_INCLUDE_DIRS}")
+list(APPEND SM_INCLUDE_DIRS "${CMRC_DIR}")
+
 target_include_directories("${SM_EXE_NAME}" PUBLIC ${SM_INCLUDE_DIRS})
+
+if(MSVC)
+    set_target_properties( "${SM_EXE_NAME}" PROPERTIES
+        ENABLE_EXPORTS 1
+        WINDOWS_EXPORT_ALL_SYMBOLS 1
+    )
+
+    add_custom_command(
+        TARGET "${SM_EXE_NAME}"
+        PRE_LINK
+        COMMAND ${CMAKE_COMMAND}
+            -DSM="${SM_EXE_NAME}"
+            -DCMAKE_BUILD_TYPE="${CMAKE_BUILD_TYPE_INIT}"
+            -DPROJECT_BINARY_DIR="${PROJECT_BINARY_DIR}"
+            -DCMAKE_SOURCE_DIR="${CMAKE_SOURCE_DIR}"
+            -P "${CMAKE_SOURCE_DIR}/CMake/FixExports.cmake"
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        COMMENT "Fix def objects.txt"
+    )
+
+endif()
 
 if(WIN32)
   set(SM_INSTALL_DESTINATION ".")

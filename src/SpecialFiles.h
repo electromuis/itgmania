@@ -33,6 +33,8 @@ namespace SpecialFiles
 
 	extern const RString COINS_INI;
 
+	extern const RString PLUGINS_DIR;
+
 }
 
 #endif

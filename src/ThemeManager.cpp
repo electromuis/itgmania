@@ -26,6 +26,7 @@
 #include "EnumHelper.h"
 #include "PrefsManager.h"
 #include "XmlFileUtil.h"
+#include "PluginManager.h"
 
 #include <cstddef>
 #include <deque>
@@ -285,6 +286,32 @@ bool ThemeManager::DoesLanguageExist( const RString &sLanguage )
 	return false;
 }
 
+RString GetPluginDirFromName(const RString& sPluginName)
+{
+	return SpecialFiles::PLUGINS_DIR + sPluginName + "/";
+}
+
+void LoadPluginMetrics()
+{
+	if (PLUGINMAN && PLUGINMAN->GetNumPlugins() > 0)
+	{
+		for (int p = 0; p < PLUGINMAN->GetNumPlugins(); p++)
+		{
+			auto plugin = PLUGINMAN->GetPlugin(p);
+			if (!plugin || !plugin->IsLoaded())
+				continue;
+
+			IniFile iniMetrics;
+			IniFile iniStrings;
+			iniMetrics.ReadFile(GetPluginDirFromName(plugin->GetName()) + SpecialFiles::METRICS_FILE);
+			iniStrings.ReadFile(GetPluginDirFromName(plugin->GetName()) + SpecialFiles::LANGUAGES_SUBDIR + "en.ini");
+
+			XmlFileUtil::MergeIniUnder(&iniMetrics, &g_pLoadedThemeData->iniMetrics);
+			XmlFileUtil::MergeIniUnder(&iniStrings, &g_pLoadedThemeData->iniStrings);
+		}
+	}
+}
+
 void ThemeManager::LoadThemeMetrics( const RString &sThemeName_, const RString &sLanguage_ )
 {
 	if( g_pLoadedThemeData == nullptr )
@@ -300,6 +327,8 @@ void ThemeManager::LoadThemeMetrics( const RString &sThemeName_, const RString &
 
 	m_sCurThemeName = sThemeName;
 	m_sCurLanguage = sLanguage;
+
+	LoadPluginMetrics();
 
 	bool bLoadedBase = false;
 	for(;;)
@@ -491,6 +520,57 @@ void ThemeManager::ClearSubscribers()
 	}
 }
 
+void RunScripts(const RString sScriptDir, const RString& sMask)
+{
+	std::vector<RString> asElementPaths;
+	// get files from directories
+	std::vector<RString> asElementChildPaths;
+	std::vector<RString> arrayScriptDirs;
+	GetDirListing(sScriptDir + "Scripts/*", arrayScriptDirs, true);
+	SortRStringArray(arrayScriptDirs);
+	StripCvsAndSvn(arrayScriptDirs);
+	StripMacResourceForks(arrayScriptDirs);
+	for (RString const& sScriptDirName : arrayScriptDirs)	// foreach dir in /Scripts/
+	{
+		// Find all Lua files in this directory, add them to asElementPaths
+		GetDirListing(sScriptDir + "Scripts/" + sScriptDirName + "/" + sMask, asElementChildPaths, false, true);
+		for (unsigned i = 0; i < asElementChildPaths.size(); ++i)
+		{
+			// push these Lua files into the main element paths
+			const RString& sPath = asElementChildPaths[i];
+			asElementPaths.push_back(sPath);
+		}
+	}
+
+	// get regular Lua files
+	GetDirListing(sScriptDir + "Scripts/" + sMask, asElementPaths, false, true);
+
+	// load Lua files
+	for (unsigned i = 0; i < asElementPaths.size(); ++i)
+	{
+		const RString& sPath = asElementPaths[i];
+		LOG->Trace("Loading \"%s\" ...", sPath.c_str());
+		LuaHelpers::RunScriptFile(sPath);
+	}
+}
+
+void ThemeManager::RunPluginLuaScripts(const RString& sMask)
+{
+	// Plugin scripts
+	if (PLUGINMAN && PLUGINMAN->GetNumPlugins() > 0)
+	{
+		for (int p = 0; p < PLUGINMAN->GetNumPlugins(); p++)
+		{
+			auto plugin = PLUGINMAN->GetPlugin(p);
+			if (!plugin || !plugin->IsLoaded())
+				continue;
+
+			RString scriptDir = GetPluginDirFromName(plugin->GetName());
+			RunScripts(scriptDir, sMask);
+		}
+	}
+}
+
 void ThemeManager::RunLuaScripts( const RString &sMask, bool bUseThemeDir )
 {
 	/* Run all script files with the given mask in Lua for all themes.  Start
@@ -499,6 +579,7 @@ void ThemeManager::RunLuaScripts( const RString &sMask, bool bUseThemeDir )
 	/* TODO: verify whether this final check is necessary. */
 	const RString sCurThemeName = m_sCurThemeName;
 
+	// Theme scripts
 	std::deque<Theme>::const_iterator iter = g_vThemes.end();
 	do
 	{
@@ -511,36 +592,7 @@ void ThemeManager::RunLuaScripts( const RString &sMask, bool bUseThemeDir )
 		m_sCurThemeName = iter->sThemeName;
 		const RString &sScriptDir = bUseThemeDir ? GetThemeDirFromName( m_sCurThemeName ) : RString("/");
 
-		std::vector<RString> asElementPaths;
-		// get files from directories
-		std::vector<RString> asElementChildPaths;
-		std::vector<RString> arrayScriptDirs;
-		GetDirListing( sScriptDir + "Scripts/*", arrayScriptDirs, true );
-		SortRStringArray( arrayScriptDirs );
-		StripCvsAndSvn( arrayScriptDirs );
-		StripMacResourceForks( arrayScriptDirs );
-		for( RString const &sScriptDirName : arrayScriptDirs )	// foreach dir in /Scripts/
-		{
-			// Find all Lua files in this directory, add them to asElementPaths
-			GetDirListing( sScriptDir + "Scripts/" + sScriptDirName + "/" + sMask, asElementChildPaths, false, true );
-			for( unsigned i = 0; i < asElementChildPaths.size(); ++i )
-			{
-				// push these Lua files into the main element paths
-				const RString &sPath = asElementChildPaths[i];
-				asElementPaths.push_back(sPath);
-			}
-		}
-
-		// get regular Lua files
-		GetDirListing( sScriptDir + "Scripts/" + sMask, asElementPaths, false, true );
-
-		// load Lua files
-		for( unsigned i = 0; i < asElementPaths.size(); ++i )
-		{
-			const RString &sPath = asElementPaths[i];
-			LOG->Trace( "Loading \"%s\" ...", sPath.c_str() );
-			LuaHelpers::RunScriptFile( sPath );
-		}
+		RunScripts(sScriptDir, sMask);
 	}
 	while( iter != g_vThemes.begin() );
 
@@ -626,7 +678,14 @@ bool ThemeManager::GetPathInfoToRaw( PathInfo &out, const RString &sThemeName_, 
 	const RString sMetricsGroup = sMetricsGroup_;
 	const RString sElement = sElement_;
 
-	const RString sThemeDir = GetThemeDirFromName( sThemeName );
+
+	RString sThemeDir = GetThemeDirFromName( sThemeName );
+
+	auto pl = PLUGINMAN->GetPlugin(sThemeName);
+	if (pl) {
+		sThemeDir = GetPluginDirFromName(sThemeName);
+	}
+
 	const RString &sCategory = ElementCategoryToString(category);
 
 	std::vector<RString> asElementPaths;
@@ -783,6 +842,17 @@ bool ThemeManager::GetPathInfoToAndFallback( PathInfo &out, ElementCategory cate
 	int n = 100;
 	while( n-- )
 	{
+		for (int p = 0; p < PLUGINMAN->GetNumPlugins(); p++)
+		{
+			auto pl = PLUGINMAN->GetPlugin(p);
+			if (!pl->IsLoaded())
+				continue;
+
+			// search with requested name
+			if (GetPathInfoToRaw(out, PLUGINMAN->GetPlugin(p)->GetName(), category, sMetricsGroup, sElement))
+				return true;
+		}
+
 		for (Theme const &theme : g_vThemes)
 		{
 			// search with requested name
