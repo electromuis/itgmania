@@ -46,7 +46,7 @@ protected:
 };
 
 
-extern AnnouncerManager*	ANNOUNCER;	// global and accessible from anywhere in our program
+GLOBALS_IMPORT_PREFIX extern AnnouncerManager*	ANNOUNCER;	// global and accessible from anywhere in our program
 
 #endif
 

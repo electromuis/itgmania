@@ -182,7 +182,7 @@ private:
 	std::set<RString> m_RouletteCodes; // "codes" which are available in roulette and which unlock if rouletted
 };
 
-extern UnlockManager*	UNLOCKMAN;  // global and accessible from anywhere in program
+GLOBALS_IMPORT_PREFIX extern UnlockManager*	UNLOCKMAN;  // global and accessible from anywhere in program
 
 #endif
 

@@ -37,7 +37,7 @@ private:
 };
 
 
-extern CharacterManager*	CHARMAN;	// global and accessible from anywhere in our program
+GLOBALS_IMPORT_PREFIX extern CharacterManager*	CHARMAN;	// global and accessible from anywhere in our program
 
 #endif
 

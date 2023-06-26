@@ -58,7 +58,7 @@ public:
 	void PushSelf( lua_State *L );
 };
 
-extern GameManager*	GAMEMAN;	// global and accessible from anywhere in our program
+GLOBALS_IMPORT_PREFIX extern GameManager*	GAMEMAN;	// global and accessible from anywhere in our program
 
 #endif
 

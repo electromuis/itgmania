@@ -211,7 +211,7 @@ private:
 	InputMapper& operator=(const InputMapper& rhs);
 };
 
-extern InputMapper*	INPUTMAPPER;	// global and accessible from anywhere in our program
+GLOBALS_IMPORT_PREFIX extern InputMapper*	INPUTMAPPER;	// global and accessible from anywhere in our program
 
 #endif
 

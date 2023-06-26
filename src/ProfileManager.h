@@ -143,7 +143,7 @@ private:
 	Profile *m_pMachineProfile;
 };
 
-extern ProfileManager*	PROFILEMAN;	// global and accessible from anywhere in our program
+GLOBALS_IMPORT_PREFIX extern ProfileManager*	PROFILEMAN;	// global and accessible from anywhere in our program
 
 #endif
 

@@ -61,7 +61,7 @@ private:
 	RageSoundManager(const RageSoundManager& rhs);
 };
 
-extern RageSoundManager *SOUNDMAN;
+GLOBALS_IMPORT_PREFIX extern RageSoundManager *SOUNDMAN;
 
 #endif
 

@@ -108,7 +108,7 @@ private:
 	int				m_iControllerTestManualCycleCurrent;
 };
 
-extern LightsManager*	LIGHTSMAN;	// global and accessible from anywhere in our program
+GLOBALS_IMPORT_PREFIX extern LightsManager*	LIGHTSMAN;	// global and accessible from anywhere in our program
 
 #endif
 

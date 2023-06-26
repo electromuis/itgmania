@@ -99,7 +99,7 @@ private:
 	InputFilter& operator=(const InputFilter& rhs);
 };
 
-extern InputFilter*	INPUTFILTER;	// global and accessible from anywhere in our program
+GLOBALS_IMPORT_PREFIX extern InputFilter*	INPUTFILTER;	// global and accessible from anywhere in our program
 
 #endif
 

@@ -46,7 +46,7 @@ private:
     StageStats m_AccumPlayedStageStats;
 };
 
-extern StatsManager*	STATSMAN;	// global and accessible from anywhere in our program
+GLOBALS_IMPORT_PREFIX extern StatsManager*	STATSMAN;	// global and accessible from anywhere in our program
 
 #endif
 

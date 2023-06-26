@@ -8,7 +8,7 @@ class RageLog
 public:
 	RageLog();
 	~RageLog();
-	
+
 	void Trace( const char *fmt, ... ) PRINTF(2,3);
 	void Warn( const char *fmt, ... ) PRINTF(2,3);
 	void Info( const char *fmt, ... ) PRINTF(2,3);
@@ -43,7 +43,7 @@ private:
 	void AddToRecentLogs( const RString &buf );
 };
 
-extern RageLog*	LOG;	// global and accessible from anywhere in our program
+GLOBALS_IMPORT_PREFIX extern RageLog*	LOG;	// global and accessible from anywhere in our program
 #endif
 
 /*

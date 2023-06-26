@@ -148,7 +148,7 @@ private:
 	static Preference<RString> httpAllowHosts;
 };
 
-extern NetworkManager*	NETWORK;
+GLOBALS_IMPORT_PREFIX extern NetworkManager*	NETWORK;
 
 #endif
 

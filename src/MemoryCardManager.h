@@ -77,7 +77,7 @@ protected:
 	RageSound m_soundDisconnect;
 };
 
-extern MemoryCardManager*	MEMCARDMAN;	// global and accessible from anywhere in our program
+GLOBALS_IMPORT_PREFIX extern MemoryCardManager*	MEMCARDMAN;	// global and accessible from anywhere in our program
 
 #endif
 

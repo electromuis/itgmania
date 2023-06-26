@@ -61,7 +61,7 @@ protected:
 	GameController m_GameController;
 };
 
-extern NoteSkinManager*	NOTESKIN;	// global and accessible from anywhere in our program
+GLOBALS_IMPORT_PREFIX extern NoteSkinManager*	NOTESKIN;	// global and accessible from anywhere in our program
 
 class LockNoteSkin
 {

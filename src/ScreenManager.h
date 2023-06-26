@@ -125,7 +125,7 @@ private:
 };
 
 
-extern ScreenManager*	SCREENMAN;	// global and accessible from anywhere in our program
+GLOBALS_IMPORT_PREFIX extern ScreenManager*	SCREENMAN;	// global and accessible from anywhere in our program
 
 #endif
 

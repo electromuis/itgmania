@@ -42,14 +42,14 @@ public:
 		bool bApplyMusicRate;
 	};
 	void PlayMusic( PlayMusicParams params, PlayMusicParams FallbackMusicParams = PlayMusicParams() );
-	void PlayMusic( 
-		RString sFile, 
-		const TimingData *pTiming = nullptr, 
-		bool force_loop = false, 
-		float start_sec = 0, 
-		float length_sec = -1, 
+	void PlayMusic(
+		RString sFile,
+		const TimingData *pTiming = nullptr,
+		bool force_loop = false,
+		float start_sec = 0,
+		float length_sec = -1,
 		float fFadeInLengthSeconds = 0,
-		float fade_len = 0, 
+		float fade_len = 0,
 		bool align_beat = true,
 		bool bApplyMusicRate = false );
 	void StopMusic() { PlayMusic(""); }
@@ -70,7 +70,7 @@ public:
 	void PushSelf( lua_State *L );
 };
 
-extern GameSoundManager *SOUND;
+GLOBALS_IMPORT_PREFIX extern GameSoundManager *SOUND;
 #endif
 
 /*

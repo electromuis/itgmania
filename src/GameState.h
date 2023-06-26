@@ -460,7 +460,7 @@ MultiPlayer GetNextEnabledMultiPlayer( MultiPlayer mp );
 
 
 
-extern GameState*	GAMESTATE;	// global and accessible from anywhere in our program
+GLOBALS_IMPORT_PREFIX extern GameState*	GAMESTATE;	// global and accessible from anywhere in our program
 
 #endif
 
