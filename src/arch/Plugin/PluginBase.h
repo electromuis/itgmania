@@ -1,7 +1,5 @@
 #pragma once
 
-#include "cmrc.hpp"
-
 class LoadedPlugin;
 struct lua_State;
 
@@ -17,7 +15,6 @@ class PluginBase {
 public:
 	PluginBase() {};
 
-	virtual cmrc::embedded_filesystem* get_fs() { return nullptr; };
 	virtual void Update(float fDeltaTime) = 0;
 	virtual void PluginFree(void* p) { free(p); };
 	virtual void PluginDelete(void* p) { delete(p); };

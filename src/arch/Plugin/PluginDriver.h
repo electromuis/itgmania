@@ -17,46 +17,40 @@ DYNALO_EXPORT typedef PluginBase* (*GetPluginFunc)();
 
 struct PluginDetails
 {
-	int apiVersion;
+	const char* apiVersion;
 	const char* fileName;
 	const char* className;
 	const char* pluginName;
 	const char* pluginVersion;
+	const char* pluginAuthor;
 	GetPluginFunc initializeFunc;
 };
 
-#define PLUGIN_API_VERSION 1
+#define PLUGIN_API_VERSION "test"
 #define STANDARD_PLUGIN_STUFF PLUGIN_API_VERSION, __FILE__
 
-#ifdef WITH_PLUGINS_EMBEDDED
-#define REGISTER_DETAILS(classType, pluginVersion)						\
-DYNALO_EXPORT extern PluginDetails classType##_Details = {				\
-	PLUGIN_API_VERSION,													\
-	__FILE__,															\
-	#classType,                                                         \
-	PLUGIN_NAME,                                                        \
-	pluginVersion,                                                      \
-	getPlugin_##classType												\
-};
-#else
-#define REGISTER_DETAILS(classType, pluginVersion)						\
+#define STRINGIFY(x) #x
+#define TOSTRING(x) STRINGIFY(x)
+
+
+#define REGISTER_DETAILS(classType, pluginVersion, pluginAuthor)        \
 DYNALO_EXPORT PluginDetails exports = {									\
 	PLUGIN_API_VERSION,													\
 	__FILE__,															\
 	#classType,                                                         \
-	PLUGIN_NAME,                                                        \
-	pluginVersion,                                                      \
+	STRINGIFY(classType),                                               \
+	pluginVersion,													    \
+	pluginAuthor,                                                       \
 	getPlugin_##classType												\
 };
-#endif
 
-#define REGISTER_PLUGIN(classType, pluginVersion)											\
+#define REGISTER_PLUGIN(classType, pluginVersion, pluginAuthor)								\
 extern "C" {																				\
     DYNALO_EXPORT PluginBase* getPlugin_##classType()										\
     {																						\
         return new classType();																\
     }																						\
-    REGISTER_DETAILS(classType, pluginVersion)												\
+    REGISTER_DETAILS(classType, pluginVersion, pluginAuthor)								\
 }
 
 class PluginDriver

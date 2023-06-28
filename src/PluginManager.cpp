@@ -4,12 +4,10 @@
 #include "PrefsManager.h"
 #include "ThemeManager.h"
 #include "RageFileManager.h"
-#include "RageFileDriverCmrc.h"
-
 PluginManager* PLUGINMAN = nullptr;
 
 PluginManager::PluginManager()
-{	
+{
 	m_pDriver = PluginDriver::Create();
 	m_pDriver->GetAvailablePlugins(plugins);
 
@@ -74,8 +72,8 @@ void PluginManager::LoadAll()
 		}
 	}
 
-	//THEME->ReloadMetrics();
-	//THEME->RunPluginLuaScripts("*.lua");
+	THEME->ReloadMetrics();
+	THEME->RunPluginLuaScripts("*.lua");
 }
 
 void PluginManager::UnloadAll()

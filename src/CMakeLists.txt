@@ -471,29 +471,15 @@ else()
 endif()
 
 list(APPEND SM_INCLUDE_DIRS "${DYNALO_INCLUDE_DIRS}")
-list(APPEND SM_INCLUDE_DIRS "${CMRC_DIR}")
 
 target_include_directories("${SM_EXE_NAME}" PUBLIC ${SM_INCLUDE_DIRS})
 
+# Build library for linking plugins
 if(MSVC)
     set_target_properties( "${SM_EXE_NAME}" PROPERTIES
         ENABLE_EXPORTS 1
         WINDOWS_EXPORT_ALL_SYMBOLS 1
     )
-
-    add_custom_command(
-        TARGET "${SM_EXE_NAME}"
-        PRE_LINK
-        COMMAND ${CMAKE_COMMAND}
-            -DSM="${SM_EXE_NAME}"
-            -DCMAKE_BUILD_TYPE="${CMAKE_BUILD_TYPE_INIT}"
-            -DPROJECT_BINARY_DIR="${PROJECT_BINARY_DIR}"
-            -DCMAKE_SOURCE_DIR="${CMAKE_SOURCE_DIR}"
-            -P "${CMAKE_SOURCE_DIR}/CMake/FixExports.cmake"
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-        COMMENT "Fix def objects.txt"
-    )
-
 endif()
 
 if(WIN32)
@@ -509,7 +495,15 @@ if(WIN32)
   list(JOIN SM_FULL_INSTALLATION_PATH_LIST "/" SM_FULL_INSTALLATION_PATH)
   # Hardcoding the values for now since the foreach loop is not working as
   # intended.
-  install(TARGETS "${SM_EXE_NAME}" DESTINATION "${SM_FULL_INSTALLATION_PATH}")
+
+  install(TARGETS "${SM_EXE_NAME}" DESTINATION "${SM_INSTALL_DESTINATION}")
+
+  install(
+    TARGETS "${SM_EXE_NAME}" "lua-5.1" "tomcrypt" "tommath" "ixwebsocket"
+        LIBRARY DESTINATION "${SM_INSTALL_DESTINATION}/Plugins/SDK/lib"
+        ARCHIVE DESTINATION "${SM_INSTALL_DESTINATION}/Plugins/SDK/lib"
+  )
+
   if(WITH_FULL_RELEASE OR WITH_TEXTURE_GENERATOR)
     install(FILES "${SM_PROGRAM_DIR}/Texture Font Generator.exe"
             DESTINATION "${SM_FULL_INSTALLATION_PATH}")
@@ -558,6 +552,29 @@ install(DIRECTORY "${SM_ROOT_DIR}/NoteSkins"
         DESTINATION "${SM_INSTALL_DESTINATION}")
 install(FILES "${SM_ROOT_DIR}/Songs/instructions.txt"
         DESTINATION "${SM_INSTALL_DESTINATION}/Songs")
+
+# Plugin SDK header files
+install(DIRECTORY "${SM_ROOT_DIR}/src/"
+        DESTINATION "${SM_INSTALL_DESTINATION}/Plugins/SDK/include"
+        FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp")
+install(DIRECTORY "${SM_ROOT_DIR}/extern/dynalo/include/"
+        DESTINATION "${SM_INSTALL_DESTINATION}/Plugins/SDK/extern/dynalo/include"
+        FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp")
+install(DIRECTORY "${SM_ROOT_DIR}/extern/lua-5.1/src/"
+        DESTINATION "${SM_INSTALL_DESTINATION}/Plugins/SDK/extern/lua-5.1/src"
+        FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp")
+install(DIRECTORY "${SM_ROOT_DIR}/extern/libtomcrypt/src/headers/"
+        DESTINATION "${SM_INSTALL_DESTINATION}/Plugins/SDK/extern/libtomcrypt/src/headers"
+        FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp")
+install(DIRECTORY "${SM_ROOT_DIR}/extern/libtommath/"
+        DESTINATION "${SM_INSTALL_DESTINATION}/Plugins/SDK/extern/libtommath"
+        FILES_MATCHING PATTERN PATTERN "*.h" PATTERN "*.hpp")
+install(DIRECTORY "${SM_ROOT_DIR}/extern/IXWebSocket/ixwebsocket/"
+        DESTINATION "${SM_INSTALL_DESTINATION}/Plugins/SDK/extern/IXWebSocket/ixwebsocket"
+        FILES_MATCHING PATTERN PATTERN "*.h" PATTERN "*.hpp")
+
+install(FILES "${SM_ROOT_DIR}/Plugins/SDK/SMSDK.cmake"
+        DESTINATION "${SM_INSTALL_DESTINATION}/Plugins/SDK/")
 
 if(WITH_CLUB_FANTASTIC)
   # Fetch ClubFantastic packs
