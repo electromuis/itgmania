@@ -40,14 +40,17 @@ void PluginManager::LoadAll()
 			p->Load(PluginLoadPhase_Library);
 			bool f = true;
 		}
-		catch (std::exception e) {
-			LOG->Trace("Failed loading plugin (Lib) exception: %s", e.what());
+		catch (std::runtime_error& e) {
+			LOG->Trace("Failed loading plugin (Lib 0) exception: %s", e.what());
 		}
-		catch (std::string e) {
-			LOG->Trace("Failed loading plugin (Lib) exception: %s", e.c_str());
+		catch (std::exception& e) {
+			LOG->Trace("Failed loading plugin (Lib 1) exception: %s", e.what());
+		}
+		catch (std::string& e) {
+			LOG->Trace("Failed loading plugin (Lib 2) exception: %s", e.c_str());
 		}
 		catch (...) {
-			LOG->Trace("Failed loading plugin (Lib)");
+			LOG->Trace("Failed loading plugin (Lib 3)");
 		}
 	}
 

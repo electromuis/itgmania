@@ -475,12 +475,10 @@ list(APPEND SM_INCLUDE_DIRS "${DYNALO_INCLUDE_DIRS}")
 target_include_directories("${SM_EXE_NAME}" PUBLIC ${SM_INCLUDE_DIRS})
 
 # Build library for linking plugins
-if(MSVC)
-    set_target_properties( "${SM_EXE_NAME}" PROPERTIES
-        ENABLE_EXPORTS 1
-        WINDOWS_EXPORT_ALL_SYMBOLS 1
-    )
-endif()
+set_target_properties( "${SM_EXE_NAME}" PROPERTIES
+   ENABLE_EXPORTS 1
+   WINDOWS_EXPORT_ALL_SYMBOLS 1
+)
 
 if(WIN32)
   set(SM_INSTALL_DESTINATION ".")
@@ -499,7 +497,7 @@ if(WIN32)
   install(TARGETS "${SM_EXE_NAME}" DESTINATION "${SM_INSTALL_DESTINATION}")
 
   install(
-    TARGETS "${SM_EXE_NAME}" "lua-5.1" "tomcrypt" "tommath" "ixwebsocket"
+    TARGETS "${SM_EXE_NAME}" "lua-5.1" "tomcrypt" "tommath" "ixwebsocket" "jsoncpp"
         LIBRARY DESTINATION "${SM_INSTALL_DESTINATION}/Plugins/SDK/lib"
         ARCHIVE DESTINATION "${SM_INSTALL_DESTINATION}/Plugins/SDK/lib"
   )
@@ -557,22 +555,39 @@ install(FILES "${SM_ROOT_DIR}/Songs/instructions.txt"
 install(DIRECTORY "${SM_ROOT_DIR}/src/"
         DESTINATION "${SM_INSTALL_DESTINATION}/Plugins/SDK/include"
         FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp")
+
+# dynalo
 install(DIRECTORY "${SM_ROOT_DIR}/extern/dynalo/include/"
         DESTINATION "${SM_INSTALL_DESTINATION}/Plugins/SDK/extern/dynalo/include"
         FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp")
+
+# jsoncpp
+install(DIRECTORY "${SM_ROOT_DIR}/extern/jsoncpp/json/"
+        DESTINATION "${SM_INSTALL_DESTINATION}/Plugins/SDK/extern/jsoncpp/json"
+        FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp")
+
+# lua
 install(DIRECTORY "${SM_ROOT_DIR}/extern/lua-5.1/src/"
         DESTINATION "${SM_INSTALL_DESTINATION}/Plugins/SDK/extern/lua-5.1/src"
         FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp")
+
+# libtomcrypt
 install(DIRECTORY "${SM_ROOT_DIR}/extern/libtomcrypt/src/headers/"
         DESTINATION "${SM_INSTALL_DESTINATION}/Plugins/SDK/extern/libtomcrypt/src/headers"
         FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp")
+
+# libtommath
 install(DIRECTORY "${SM_ROOT_DIR}/extern/libtommath/"
         DESTINATION "${SM_INSTALL_DESTINATION}/Plugins/SDK/extern/libtommath"
         FILES_MATCHING PATTERN PATTERN "*.h" PATTERN "*.hpp")
+
+# IXWebSocket
 install(DIRECTORY "${SM_ROOT_DIR}/extern/IXWebSocket/ixwebsocket/"
         DESTINATION "${SM_INSTALL_DESTINATION}/Plugins/SDK/extern/IXWebSocket/ixwebsocket"
         FILES_MATCHING PATTERN PATTERN "*.h" PATTERN "*.hpp")
 
+install(FILES "${SM_ROOT_DIR}/CMake/SMSDK.cmake"
+        DESTINATION "${SM_INSTALL_DESTINATION}/Plugins/SDK/")
 install(FILES "${SM_ROOT_DIR}/Plugins/SDK/SMSDK.cmake"
         DESTINATION "${SM_INSTALL_DESTINATION}/Plugins/SDK/")
 
