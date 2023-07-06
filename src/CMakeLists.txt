@@ -586,9 +586,7 @@ install(DIRECTORY "${SM_ROOT_DIR}/extern/IXWebSocket/ixwebsocket/"
         DESTINATION "${SM_INSTALL_DESTINATION}/Plugins/SDK/extern/IXWebSocket/ixwebsocket"
         FILES_MATCHING PATTERN PATTERN "*.h" PATTERN "*.hpp")
 
-install(FILES "${SM_ROOT_DIR}/CMake/SMSDK.cmake"
-        DESTINATION "${SM_INSTALL_DESTINATION}/Plugins/SDK/")
-install(FILES "${SM_ROOT_DIR}/Plugins/SDK/SMSDK.cmake"
+install(FILES "${SM_ROOT_DIR}/CMake/Modules/SMSDK.cmake"
         DESTINATION "${SM_INSTALL_DESTINATION}/Plugins/SDK/")
 
 if(WITH_CLUB_FANTASTIC)
