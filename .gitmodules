@@ -37,3 +37,6 @@
 	path = extern/libtomcrypt
 	url = https://github.com/libtom/libtomcrypt.git
 	shallow = true
+[submodule "extern/dynalo"]
+	path = extern/dynalo
+	url = https://github.com/maddouri/dynalo

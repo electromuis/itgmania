@@ -1,7 +1,7 @@
 IF(SM_EXE_NAME)
   set(SM_TARGET "ITGmania")
 
-  SET("SM_SDK_PATH" "${CMAKE_CURRENT_LIST_DIR}/..")
+  SET("SM_SDK_PATH" "${CMAKE_CURRENT_LIST_DIR}/../..")
   SET(SM_SDK_INCLUDE_PATH
           "${SM_SDK_PATH}/src"
           "${SM_SDK_PATH}/src/generated"
