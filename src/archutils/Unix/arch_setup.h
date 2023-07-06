@@ -17,8 +17,6 @@
 #undef MACHINE
 #endif
 
-#define GLOBALS_IMPORT_PREFIX
-
 #endif
 
 /*

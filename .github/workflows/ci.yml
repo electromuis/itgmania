@@ -26,7 +26,6 @@ jobs:
           libxrandr-dev
           libxtst-dev
           nasm
-          zip
       - name: Configure
         run: cmake -B build
       - name: Build
@@ -34,11 +33,10 @@ jobs:
       - name: Package
         run: |
           cmake --install build --prefix=build/package
-          zip -r build/package.zip build/package
       - uses: actions/upload-artifact@v3
         with:
-          name: package.zip
-          path: build/package.zip
+          name: package-ubuntu
+          path: build/package
 
   macos-build-arm64:
     name: macOS (M1)
@@ -84,9 +82,7 @@ jobs:
       - name: Package
         run: |
           cmake --install build --prefix=build/package
-          choco install zip
-          zip -r build/package.zip build/package
       - uses: actions/upload-artifact@v3
         with:
-          name: package.zip
-          path: build/package.zip
+          name: package-windows
+          path: build/package

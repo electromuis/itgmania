@@ -21,6 +21,10 @@
 #include "archutils/Unix/arch_setup.h"
 #endif
 
+#ifndef GLOBALS_IMPORT_PREFIX
+	#define GLOBALS_IMPORT_PREFIX
+#endif
+
 /* Make sure everyone has min and max: */
 #include <algorithm>
 
