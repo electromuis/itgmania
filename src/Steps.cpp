@@ -48,6 +48,14 @@ static const char *DisplayBPMNames[] =
 XToString( DisplayBPM );
 LuaXType( DisplayBPM );
 
+static const char *HashTypeNames[] =
+{
+	"SM",
+	"GS3",
+};
+XToString( HashType );
+LuaXType( HashType );
+
 Steps::Steps(Song *song): m_StepsType(StepsType_Invalid), m_pSong(song),
 	parent(nullptr), m_pNoteData(new NoteData), m_bNoteDataIsFilled(false),
 	m_sNoteDataCompressed(""), m_sFilename(""), m_bSavedToDisk(false),
@@ -97,6 +105,46 @@ unsigned Steps::GetHash() const
 	}
 	m_iHash = GetHashForString( m_sNoteDataCompressed );
 	return m_iHash;
+}
+
+RString NormalizeDecimal(double decimal)
+{
+	decimal = std::ceil(decimal * 10000.0f) / 10000.0f;
+	return ssprintf("%.3f", decimal);
+}
+
+RString Steps::GetHash(HashType type) const
+{
+	RString ret = "";
+
+	switch(type) {
+		case HASH_TYPE_SM:
+			ret = GetHash();
+			break;
+		case HASH_TYPE_GS3:
+			RString hashInput = "";
+
+			// Notes
+			Decompress();
+			NoteDataUtil::GetGSNoteDataString( *m_pNoteData, hashInput );
+
+			// BPM
+			auto bpms = m_pSong->m_SongTiming.GetTimingSegments(SEGMENT_BPM);
+
+			for(int i=0; i<bpms.size(); i++) {
+				BPMSegment* bpm = (BPMSegment*)bpms[i];
+				hashInput.append(ssprintf("%s=%s", NormalizeDecimal(bpm->GetBeat()).c_str(), NormalizeDecimal(bpm->GetBPM()).c_str()));
+
+				if(i < bpms.size()-1)
+					hashInput.append(",\n");
+			}
+
+			// Hash
+			ret = BinaryToHex(CRYPTMAN->GetSHA1ForString(hashInput)).substr(16);
+			break;
+	}
+
+	return ret;
 }
 
 bool Steps::IsNoteDataEmpty() const

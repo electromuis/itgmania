@@ -36,6 +36,18 @@ enum DisplayBPM
 const RString& DisplayBPMToString( DisplayBPM dbpm );
 LuaDeclareType( DisplayBPM );
 
+/** @brief Different hash types that cal be calculated. */
+enum HashType
+{
+	HASH_TYPE_SM, // Stepmania default hash
+	HASH_TYPE_GS3, // Groovestats V3 hash
+	NUM_HashType,
+	HashType_Invalid
+};
+const RString& HashTypeToString( HashType type );
+HashType StringToHashType( const RString& s );
+LuaDeclareType( HashType );
+
 /**
  * @brief Holds note information for a Song.
  *
@@ -142,6 +154,7 @@ public:
 	float PredictMeter() const;
 
 	unsigned GetHash() const;
+	RString GetHash(HashType type) const;
 	void GetNoteData( NoteData& noteDataOut ) const;
 	NoteData GetNoteData() const;
 	void SetNoteData( const NoteData& noteDataNew );

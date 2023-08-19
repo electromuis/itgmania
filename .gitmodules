@@ -37,3 +37,7 @@
 	path = extern/libtomcrypt
 	url = https://github.com/libtom/libtomcrypt.git
 	shallow = true
+[submodule "extern/argparse"]
+	path = extern/argparse
+	url = https://github.com/morrisfranken/argparse.git
+	shallow = true

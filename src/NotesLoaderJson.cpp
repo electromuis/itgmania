@@ -90,6 +90,13 @@ static void Deserialize(BackgroundChange &o, const Json::Value &root )
 	o.m_sTransition = root["Transition"].asString();
 }
 
+static void Deserialize(Attack& a, const Json::Value& root)
+{
+	a.fStartSecond = (float)root["StartTime"].asDouble();
+	a.fSecsRemaining = (float)root["Length"].asDouble();
+	a.sModifiers = root["Mods"].asString();
+}
+
 static void Deserialize( TapNote &o, const Json::Value &root )
 {
 	if( root.isInt() ) {
@@ -134,7 +141,39 @@ static void Deserialize( RadarValues &o, const Json::Value &root )
 static void Deserialize( Steps &o, const Json::Value &root )
 {
 	o.m_StepsType = GAMEMAN->StringToStepsType(root["StepsType"].asString());
+	if (root.isMember("ChartName"))
+		o.SetChartName(root["ChartName"].asString());
+	if (root.isMember("ChartStyle"))
+		o.SetChartStyle(root["ChartStyle"].asString());
+	if (root.isMember("Music"))
+		o.SetMusicFile(root["Music"].asString());
+	if (root.isMember("Credit"))
+		o.SetCredit(root["Credit"].asString());
 
+	if (root.isMember("TimingData"))
+	{
+		o.m_Timing.m_fBeat0OffsetInSeconds = (float)root["Offset"].asDouble();
+		Deserialize(o.m_Timing, root["TimingData"]);
+
+		RString sDisplayBPMType = root["DisplayBpmType"].asString();
+		if (sDisplayBPMType == "*")
+			o.SetDisplayBPM(DISPLAY_BPM_RANDOM);
+		else
+			o.SetDisplayBPM(DISPLAY_BPM_SPECIFIED);
+
+		if (o.GetDisplayBPM() == DISPLAY_BPM_SPECIFIED)
+		{
+			o.SetMinBPM((float)root["SpecifiedBpmMin"].asDouble());
+			o.SetMaxBPM((float)root["SpecifiedBpmMax"].asDouble());
+		}
+	}
+
+	if (root.isMember("Attacks"))
+	{
+		std::vector<Attack>& vAtt = o.m_Attacks;
+		JsonUtil::DeserializeVectorObjects(vAtt, Deserialize, root["Attacks"]);
+	}
+	
 	o.Decompress();
 
 	NoteData nd;
@@ -155,6 +194,7 @@ static void Deserialize( Steps &o, const Json::Value &root )
 
 static void Deserialize( Song &out, const Json::Value &root )
 {
+	if (root.isMember("Version")) out.m_fVersion = root["Version"].asFloat();
 	out.SetSongDir( root["SongDir"].asString() );
 	out.m_sGroupName = root["GroupName"].asString();
 	out.m_sMainTitle = root["Title"].asString();
@@ -163,12 +203,18 @@ static void Deserialize( Song &out, const Json::Value &root )
 	out.m_sMainTitleTranslit = root["TitleTranslit"].asString();
 	out.m_sSubTitleTranslit = root["SubTitleTranslit"].asString();
 	out.m_sGenre = root["Genre"].asString();
+	if (root.isMember("Origin")) out.m_sOrigin = root["Origin"].asString();
 	out.m_sCredit = root["Credit"].asString();
 	out.m_sBannerFile = root["Banner"].asString();
 	out.m_sBackgroundFile = root["Background"].asString();
+	if (root.isMember("PreviewVid")) out.m_sPreviewVidFile = root["PreviewVid"].asString();
+	if (root.isMember("Jacket")) out.m_sJacketFile = root["Jacket"].asString();
+	if (root.isMember("CDImage")) out.m_sCDFile = root["CDImage"].asString();
+	if (root.isMember("DiscImage")) out.m_sDiscFile = root["DiscImage"].asString();
 	out.m_sLyricsFile = root["LyricsFile"].asString();
 	out.m_sCDTitleFile = root["CDTitle"].asString();
 	out.m_sMusicFile = root["Music"].asString();
+	if (root.isMember("Preview")) out.m_PreviewFile = root["Preview"].asString();
 	out.m_SongTiming.m_fBeat0OffsetInSeconds = (float)root["Offset"].asDouble();
 	out.m_fMusicSampleStartSeconds = (float)root["SampleStart"].asDouble();
 	out.m_fMusicSampleLengthSeconds = (float)root["SampleLength"].asDouble();
@@ -220,6 +266,12 @@ static void Deserialize( Song &out, const Json::Value &root )
 		JsonUtil::DeserializeVectorPointersParam<Steps,Song*>( vpSteps, Deserialize, root["Charts"], &out );
 		for (Steps *step : vpSteps)
 			out.AddSteps( step );
+	}
+
+	if (root.isMember("Attacks"))
+	{
+		std::vector<Attack>& vAtt = out.m_Attacks;
+		JsonUtil::DeserializeVectorObjects(vAtt, Deserialize, root["Attacks"]);
 	}
 }
 

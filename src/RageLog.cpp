@@ -89,10 +89,29 @@ m_bUserLogToDisk(false), m_bFlush(false), m_bShowLogOutput(false)
 	g_fileUserLog = new RageFile;
 	g_fileTimeLog = new RageFile;
 
-	if(!g_fileTimeLog->Open(TIME_PATH, RageFile::WRITE|RageFile::STREAMED))
+	if(!g_fileTimeLog->Open(TIME_PATH, RageFile::WRITE | RageFile::STREAMED))
 	{ fprintf(stderr, "Couldn't open %s: %s\n", TIME_PATH, g_fileTimeLog->GetError().c_str()); }
 
 	g_Mutex = new RageMutex( "Log" );
+}
+
+RageLog::RageLog(bool fileOutput, bool stdOutput) : m_bLogToDisk(fileOutput), m_bInfoToDisk(fileOutput),
+m_bUserLogToDisk(fileOutput), m_bFlush(false), m_bShowLogOutput(stdOutput)
+{
+	g_fileLog = new RageFile;
+	g_fileInfo = new RageFile;
+	g_fileUserLog = new RageFile;
+	g_fileTimeLog = new RageFile;
+
+	if (fileOutput)
+	{
+		if (!g_fileTimeLog->Open(TIME_PATH, RageFile::WRITE | RageFile::STREAMED))
+		{
+			fprintf(stderr, "Couldn't open %s: %s\n", TIME_PATH, g_fileTimeLog->GetError().c_str());
+		}
+	}
+
+	g_Mutex = new RageMutex("Log");
 }
 
 RageLog::~RageLog()

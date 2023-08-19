@@ -23,6 +23,8 @@ include(CMakeData-file-types.cmake)
 include(CMakeData-globals.cmake)
 include(CMakeData-singletons.cmake)
 
+include("CMakeProject-itgtools.cmake")
+
 list(APPEND SMDATA_ALL_FILES_SRC
             ${SMDATA_GLOBAL_FILES_SRC}
             ${SMDATA_GLOBAL_SINGLETON_SRC}

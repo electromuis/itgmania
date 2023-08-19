@@ -54,6 +54,13 @@ static void Serialize(const BackgroundChange &o, Json::Value &root )
 	root["Transition"] = o.m_sTransition;
 }
 
+static void Serialize(const Attack& a, Json::Value& root)
+{
+	root["StartTime"] = a.fStartSecond;
+	root["Length"] = a.fSecsRemaining;
+	root["Mods"] = a.sModifiers;
+}
+
 static void Serialize( const TapNote &o, Json::Value &root )
 {
 	root = Json::Value(Json::objectValue);
@@ -106,8 +113,35 @@ static void Serialize( const RadarValues &o, Json::Value &root )
 }
 
 static void Serialize( const Steps &o, Json::Value &root )
-{
+{	
 	root["StepsType"] = StringConversion::ToString(o.m_StepsType);
+	root["ChartName"] = o.GetChartName();
+	root["ChartStyle"] = o.GetChartStyle();
+
+	const RString& music = o.GetMusicFile();
+	if (!music.empty())
+		root["Music"] = music;
+
+	root["Credit"] = o.GetCredit();
+
+	if (!o.m_Timing.empty())
+	{
+		root["Offset"] = o.m_Timing.m_fBeat0OffsetInSeconds;
+		Serialize(o.m_Timing, root["TimingData"]);
+
+		root["DisplayBpmType"] = StringConversion::ToString(o.GetDisplayBPM());
+		if (o.GetDisplayBPM() == DISPLAY_BPM_SPECIFIED)
+		{
+			root["SpecifiedBpmMin"] = o.GetMinBPM();
+			root["SpecifiedBpmMax"] = o.GetMaxBPM();
+		}
+	}
+
+	if (o.m_pSong->GetAttackString() != o.GetAttackString())
+	{
+		const std::vector<Attack>& vAtt = o.m_Attacks;
+		JsonUtil::SerializeVectorObjects(vAtt, Serialize, root["Attacks"]);
+	}
 
 	o.Decompress();
 
@@ -125,6 +159,7 @@ static void Serialize( const Steps &o, Json::Value &root )
 bool NotesWriterJson::WriteSong( const RString &sFile, const Song &out, bool bWriteSteps )
 {
 	Json::Value root;
+	root["Version"] = STEPFILE_VERSION_NUMBER;
 	root["SongDir"] = out.GetSongDir();
 	root["GroupName"] = out.m_sGroupName;
 	root["Title"] = out.m_sMainTitle;
@@ -133,15 +168,23 @@ bool NotesWriterJson::WriteSong( const RString &sFile, const Song &out, bool bWr
 	root["TitleTranslit"] = out.m_sMainTitleTranslit;
 	root["SubTitleTranslit"] = out.m_sSubTitleTranslit;
 	root["Genre"] = out.m_sGenre;
+	root["Origin"] = out.m_sOrigin;
 	root["Credit"] = out.m_sCredit;
 	root["Banner"] = out.m_sBannerFile;
 	root["Background"] = out.m_sBackgroundFile;
+	root["PreviewVid"] = out.m_sPreviewVidFile;
+	root["Jacket"] = out.m_sJacketFile;
+	root["CDImage"] = out.m_sCDFile;
+	root["DiscImage"] = out.m_sDiscFile;
 	root["LyricsFile"] = out.m_sLyricsFile;
 	root["CDTitle"] = out.m_sCDTitleFile;
 	root["Music"] = out.m_sMusicFile;
+	if (!out.m_PreviewFile.empty())
+		root["Preview"] = out.m_PreviewFile;
 	root["Offset"] = out.m_SongTiming.m_fBeat0OffsetInSeconds;
 	root["SampleStart"] = out.m_fMusicSampleStartSeconds;
 	root["SampleLength"] = out.m_fMusicSampleLengthSeconds;
+
 	if( out.m_SelectionDisplay == Song::SHOW_ALWAYS )
 		root["Selectable"] = "YES";
 	else if( out.m_SelectionDisplay == Song::SHOW_NEVER )
@@ -157,7 +200,7 @@ bool NotesWriterJson::WriteSong( const RString &sFile, const Song &out, bool bWr
 	root["MusicLengthSeconds"] = out.m_fMusicLengthSeconds;
 
 	root["DisplayBpmType"] = StringConversion::ToString(out.m_DisplayBPMType);
-	if( out.m_DisplayBPMType == DISPLAY_BPM_SPECIFIED )
+	if ( out.m_DisplayBPMType == DISPLAY_BPM_SPECIFIED )
 	{
 		root["SpecifiedBpmMin"] = out.m_fSpecifiedBPMMin;
 		root["SpecifiedBpmMax"] = out.m_fSpecifiedBPMMax;
@@ -182,6 +225,13 @@ bool NotesWriterJson::WriteSong( const RString &sFile, const Song &out, bool bWr
 	}
 
 	JsonUtil::SerializeArrayValues( out.m_vsKeysoundFile, root["KeySounds"] );
+
+	// Attacks
+	if( out.m_Attacks.size() > 0 )
+	{
+		const std::vector<Attack>& vAtt = out.m_Attacks;
+		JsonUtil::SerializeVectorObjects(vAtt, Serialize, root["Attacks"]);
+	}
 
 	if( bWriteSteps )
 	{

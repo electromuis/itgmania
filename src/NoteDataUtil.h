@@ -30,6 +30,7 @@ namespace NoteDataUtil
 	NoteType GetSmallestNoteTypeInRange( const NoteData &nd, int iStartIndex, int iEndIndex );
 	void LoadFromSMNoteDataString( NoteData &out, const RString &sSMNoteData, bool bComposite );
 	void GetSMNoteDataString( const NoteData &in, RString &notes_out );
+	void GetGSNoteDataString( const NoteData &in, RString &notes_out );
 	void SplitCompositeNoteData( const NoteData &in, std::vector<NoteData> &out );
 	void CombineCompositeNoteData( NoteData &out, const std::vector<NoteData> &in );
 	/**

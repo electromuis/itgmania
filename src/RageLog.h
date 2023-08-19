@@ -7,6 +7,7 @@ class RageLog
 {
 public:
 	RageLog();
+	RageLog(bool fileOutput, bool stdOutput);
 	~RageLog();
 	
 	void Trace( const char *fmt, ... ) PRINTF(2,3);
