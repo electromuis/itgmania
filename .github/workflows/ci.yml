@@ -86,3 +86,25 @@ jobs:
         with:
           name: package-windows
           path: build/package
+
+  release-sdk:
+    name: "Release SDK"
+    needs:
+      - ubuntu-build
+      - windows-build
+    runs-on: ubuntu-latest
+    if: success() || failure()
+    steps:
+      - name: Download reports' artifacts
+        uses: actions/download-artifact@v3
+        with:
+          path: downloaded_artifacts
+      - name: "Extract artifacts"
+        run: |
+          cp -r downloaded_artifacts/package-windows/Plugins/SDK ./SMSDK
+          mv ./SMSDK/include/generated ./SMSDK/include/generated_win
+          cp -r downloaded_artifacts/package-ubuntu/itgmania/Plugins/SDK/include/generated ./SMSDK/include/generated_linux
+      - uses: actions/upload-artifact@v3
+        with:
+          name: SMSDK
+          path: SMSDK

@@ -20,6 +20,13 @@ ELSE()
           "${SM_SDK_PATH}/extern/dynalo/include"
   )
 
+  if(WIN32)
+    list(APPEND SM_SDK_INCLUDE_PATH "${SM_SDK_PATH}/include/generated_win")
+  endif()
+  if(LINUX)
+    list(APPEND SM_SDK_INCLUDE_PATH "${SM_SDK_PATH}/include/generated_linux")
+  endif()
+
   add_library("StepMania" IMPORTED STATIC GLOBAL)
   set_target_properties(StepMania PROPERTIES
           IMPORTED_LOCATION "${SM_SDK_PATH}/lib/${SM_NAME}.lib")
@@ -69,7 +76,9 @@ MACRO(REGISTER_PLUGIN SOURCE_DIR PLUGIN_NAME)
         ENDIF()
 
         target_compile_definitions(${PLUGIN_NAME} PRIVATE ${PLUGIN_DEFS})
-        target_link_libraries(${PLUGIN_NAME} ${SM_TARGET})
+        if(WIN32)
+          target_link_libraries(${PLUGIN_NAME} ${SM_TARGET})
+        endif()
         target_include_directories(${PLUGIN_NAME} PUBLIC ${SM_SDK_INCLUDE_PATH})
         set_property(TARGET ${PLUGIN_NAME} PROPERTY FOLDER "Plugins")
         set_target_properties(${PLUGIN_NAME} PROPERTIES
