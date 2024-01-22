@@ -197,9 +197,9 @@ void Luna<LoadedPlugin>::PushObject(Lua* L, const RString& sDerivedClassName, Lo
 			lua_setfield(L, funcTable, r.szName);
 		}
 
-		pb->PluginDelete(regs);
+		// pb->PluginDelete(regs);
 	}
-	
+
 	lua_pop(L, 1);
 	lua_setmetatable(L, retTable);
 }

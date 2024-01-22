@@ -27,9 +27,7 @@ public:
 	void* AppAllocate(size_t space);
 
 	void AppFree(void* addr);
-	void AppDelete(void* addr);
 	void PluginFree(void* addr);
-	void PluginDelete(void* addr);
 
 	int GetNumPlugins() { return plugins.size(); }
 	LoadedPlugin* GetPlugin(int index);

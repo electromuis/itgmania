@@ -108,11 +108,6 @@ void PluginManager::AppFree(void* addr)
 	free(addr);
 }
 
-void PluginManager::AppDelete(void* addr)
-{
-	delete(addr);
-}
-
 void* PluginManager::AppAllocate(size_t size)
 {
 	return malloc(size);
